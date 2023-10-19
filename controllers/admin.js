@@ -1,56 +1,64 @@
 const Product = require("../models/product");
 
-const getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then((products) => {
-      return res.status(200).json(products);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        success: false,
-        message: "Internal Server Error!",
-      });
+const getProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error!",
     });
+  }
 };
 
-const updateProduct = (req, res, next) => {
+const updateProduct = async (req, res, next) => {
   const id = req.params.id;
   const { title, price, description, imageUrl } = req.body;
-  const product = new Product(title, price, description, imageUrl, id);
-  product
-    .save()
-    .then(() => {
+  try {
+    const result = await Product.findByIdAndUpdate(id, {
+      title,
+      price,
+      description,
+      imageUrl,
+    });
+    if (result) {
       return res.status(200).json({
         success: true,
-        message: "Product Updated!",
+        message: "Product updated!",
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
+    } else {
+      return res.status(404).json({
         success: false,
-        message: "Internal Server Error!",
+        message: "Product not found!",
       });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error!",
     });
+  }
 };
 
-const deleteProduct = (req, res, next) => {
+const deleteProduct = async (req, res, next) => {
   const id = req.params.id;
-  Product.deleteById(id)
-    .then(() => {
+  try {
+    const result = await Product.findByIdAndDelete(id);
+    if (result) {
       return res.status(200).json({
         success: true,
-        message: "Product Deleted!",
+        message: "Product deleted!",
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
+    } else {
+      return res.status(404).json({
         success: false,
-        message: "Internal Server Error!",
+        message: "Product not found or already deleted!",
       });
-    });
+    }
+  } catch (error) {}
 };
 
 module.exports = { updateProduct, deleteProduct, getProducts };
