@@ -6,7 +6,7 @@ const app = express();
 
 app.use(express.json());
 app.use("/product", productRoutes);
-app.use("/admin", adminRoutes);
+app.use("/admin/product", adminRoutes);
 
 connectDb(() => {
   app.listen(3000, () => console.log("Server running on Port: 3000"));

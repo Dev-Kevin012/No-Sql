@@ -1,5 +1,19 @@
 const Product = require("../models/product");
 
+const getProducts = (req, res, next) => {
+  Product.fetchAll()
+    .then((products) => {
+      return res.status(200).json(products);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error!",
+      });
+    });
+};
+
 const updateProduct = (req, res, next) => {
   const id = req.params.id;
   const { title, price, description, imageUrl } = req.body;
@@ -39,4 +53,4 @@ const deleteProduct = (req, res, next) => {
     });
 };
 
-module.exports = { updateProduct, deleteProduct };
+module.exports = { updateProduct, deleteProduct, getProducts };

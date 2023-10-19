@@ -9,25 +9,31 @@ class Product {
     this.imageUrl = imageUrl;
     this._id = _id;
   }
+
   save() {
     const db = getDb();
     if (this._id) {
-      const productData = {
-        title: this.title,
-        price: this.price,
-        description: this.description,
-        imageUrl: this.imageUrl,
-      };
       return db
         .collection("products")
         .updateOne(
           { _id: new ObjectId(this._id) },
           {
-            $set: productData,
+            $set: {
+              title: this.title,
+              price: this.price,
+              description: this.description,
+              imageUrl: this.imageUrl,
+            },
           }
         )
         .then((result) => {
-          console.log("Data Updated Successfuly!", result);
+          if (result.updatedCount === 1) {
+            console.log("Product updated successfully!");
+            return true;
+          } else {
+            console.log("Product not found or deleted!");
+            return false;
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -44,6 +50,7 @@ class Product {
         });
     }
   }
+
   static fetchAll() {
     const db = getDb();
     return db
@@ -60,10 +67,9 @@ class Product {
 
   static fetchbyId(prodId) {
     const db = getDb();
-    const objectId = new ObjectId(prodId);
     return db
       .collection("products")
-      .find({ _id: objectId })
+      .find({ _id: new ObjectId(prodId) })
       .next()
       .then((result) => {
         return result;

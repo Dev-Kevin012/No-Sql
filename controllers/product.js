@@ -33,6 +33,7 @@ const getProducts = (req, res, next) => {
       });
     });
 };
+
 const getProduct = async (req, res, next) => {
   const id = req.params.id;
   try {
